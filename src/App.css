@@ -266,3 +266,54 @@
 @media (max-width: 480px) {
   .app-root { max-width: 100%; }
 }
+/* 匯出選單 */
+.export-wrap {
+  position: relative;
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+  z-index: 999;
+  min-width: 160px;
+  overflow: hidden;
+  animation: menuPop 0.15s ease;
+}
+
+@keyframes menuPop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.export-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 18px;
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: var(--brown);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.export-item:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.export-item:hover, .export-item:active {
+  background: var(--yellow-light);
+}
+
+.export-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
