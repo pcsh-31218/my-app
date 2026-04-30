@@ -46,6 +46,8 @@ jobs:
         run: |
           npm install
           npm run build
+          mkdir -p www
+          cp -r dist/* www/
           npx cap sync android
 
       - name: Build APK
