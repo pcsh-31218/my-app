@@ -1,8 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import './App.css'
-import { Document, Packer, Paragraph, TextRun } from "docx";
-import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
-import { Share } from "@capacitor/share";
 
 const ts = () => { const d = new Date(); return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`; };
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -19,9 +16,6 @@ function initState() {
 }
 
 const createMessage = (data) => ({ id: uid(), timestamp: ts(), ...data });
-
-// 判斷是否在 Capacitor (Android) 環境
-const isCapacitor = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
 function App() {
   const init = initState();
@@ -86,69 +80,6 @@ function App() {
     return `【${name} ${m.timestamp}】\n${m.content}`;
   }).join("\n\n");
 
-  // 轉 blob 為 base64
-  const blobToBase64 = (blob) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-
-  // 匯出 Word
-  const handleExportWord = async () => {
-    if (messages.length === 0) { alert("尚無訊息"); return; }
-    setShowExportMenu(false);
-    try {
-      const paragraphs = [
-        new Paragraph({ children: [new TextRun({ text: "訪談紀錄", bold: true, size: 32 })], spacing: { after: 300 } })
-      ];
-      messages.forEach(m => {
-        const name = m.role === "interviewer" ? (interviewerName || "面試官") : (intervieweeName || "應試者");
-        paragraphs.push(new Paragraph({ children: [new TextRun({ text: `${name}  ${m.timestamp}`, bold: true, color: "7A4F1E" })], spacing: { before: 200 } }));
-        paragraphs.push(new Paragraph({ children: [new TextRun({ text: m.content })], spacing: { after: 100 } }));
-      });
-      const doc = new Document({ sections: [{ properties: {}, children: paragraphs }] });
-      const blob = await Packer.toBlob(doc);
-
-      if (isCapacitor()) {
-        // Android：存到裝置再分享
-        const base64 = await blobToBase64(blob);
-        const fileName = "訪談紀錄.docx";
-        await Filesystem.writeFile({
-          path: fileName,
-          data: base64,
-          directory: Directory.Cache,
-        });
-        const { uri } = await Filesystem.getUri({ path: fileName, directory: Directory.Cache });
-        await Share.share({ title: "訪談紀錄", url: uri });
-      } else {
-        // 瀏覽器：直接下載
-        const { saveAs } = await import("file-saver");
-        saveAs(blob, "訪談紀錄.docx");
-      }
-    } catch (e) {
-      alert("匯出失敗：" + e.message);
-    }
-  };
-
-  // 分享文字（LINE 等）
-  const handleShare = async () => {
-    if (messages.length === 0) { alert("尚無訊息"); return; }
-    setShowExportMenu(false);
-    const text = getTextContent();
-    try {
-      if (isCapacitor()) {
-        await Share.share({ title: "訪談紀錄", text });
-      } else if (navigator.share) {
-        await navigator.share({ title: "訪談紀錄", text });
-      } else {
-        await navigator.clipboard.writeText(text);
-        alert("已複製到剪貼簿！");
-      }
-    } catch (e) { console.log(e); }
-  };
-
-  // 複製文字
   const handleCopy = async () => {
     if (messages.length === 0) { alert("尚無訊息"); return; }
     setShowExportMenu(false);
@@ -173,8 +104,6 @@ function App() {
             <button className="header-icon" onClick={() => setShowExportMenu(s => !s)}>↑</button>
             {showExportMenu && (
               <div className="export-menu">
-                <button className="export-item" onClick={handleExportWord}><span className="export-icon">📄</span>匯出 Word 檔</button>
-                <button className="export-item" onClick={handleShare}><span className="export-icon">🔗</span>分享（LINE 等）</button>
                 <button className="export-item" onClick={handleCopy}><span className="export-icon">📋</span>複製文字</button>
               </div>
             )}
