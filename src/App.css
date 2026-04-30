@@ -262,10 +262,11 @@
 }
 .send-btn.active { background: var(--yellow-dark); cursor: pointer; }
 
-/* RWD 手機 */
+/* RWD */
 @media (max-width: 480px) {
   .app-root { max-width: 100%; }
 }
+
 /* 匯出選單 */
 .export-wrap {
   position: relative;
