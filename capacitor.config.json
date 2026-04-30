@@ -2,4 +2,8 @@
   "appId": "com.pcsh31218.myapp",
   "appName": "my-app",
   "webDir": "dist",
+  "server": {
+    "url": "https://pcsh-31218.github.io/my-app/",
+    "cleartext": true
+  }
 }
