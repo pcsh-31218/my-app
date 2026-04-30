@@ -19,13 +19,13 @@
 .app-root {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: 100dvh; 
   background-image:
     repeating-linear-gradient(0deg, transparent, transparent 29px, var(--border) 29px, var(--border) 30px),
     repeating-linear-gradient(90deg, transparent, transparent 29px, var(--border) 30px, var(--border) 30px);
   background-color: var(--yellow-light);
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  max-width: 480px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
